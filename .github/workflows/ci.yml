@@ -28,26 +28,33 @@ jobs:
     
     - name: Install dependencies
       run: |
-        make install-dev
+        uv venv
+        source .venv/bin/activate
+        uv pip install -e ".[dev,docs]"
     
     - name: Run linting
       run: |
+        source .venv/bin/activate
         make lint
     
     - name: Run type checking
       run: |
+        source .venv/bin/activate
         make type-check
     
     - name: Run tests
       run: |
+        source .venv/bin/activate
         make test
     
     - name: Check code formatting
       run: |
+        source .venv/bin/activate
         make format-check
     
     - name: Build package
       run: |
+        source .venv/bin/activate
         make build
 
   security:
@@ -67,10 +74,13 @@ jobs:
     
     - name: Install dependencies
       run: |
-        make install-dev
+        uv venv
+        source .venv/bin/activate
+        uv pip install -e ".[dev,docs]"
     
     - name: Run security scan
       run: |
+        source .venv/bin/activate
         make security
 
   publish:
@@ -93,10 +103,13 @@ jobs:
     
     - name: Install dependencies
       run: |
-        make install-dev
+        uv venv
+        source .venv/bin/activate
+        uv pip install -e ".[dev,docs]"
     
     - name: Build package
       run: |
+        source .venv/bin/activate
         make build
     
     - name: Publish to PyPI
@@ -105,4 +118,5 @@ jobs:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
       run: |
+        source .venv/bin/activate
         make publish

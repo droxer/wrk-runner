@@ -25,6 +25,7 @@ install:
 	uv pip install -e .
 
 install-dev:
+	uv venv
 	uv pip install -e ".[dev,docs]"
 
 # Build
