@@ -2,8 +2,8 @@ site_name: wrk-runner
 site_description: Generic performance testing framework using wrk
 site_url: https://wrk-runner.readthedocs.io
 
-repo_name: your-org/wrk-runner
-repo_url: https://github.com/your-org/wrk-runner
+repo_name: droxer/wrk-runner
+repo_url: https://github.com/droxer/wrk-runner
 
 nav:
   - Home: index.md
@@ -78,6 +78,6 @@ markdown_extensions:
 extra:
   social:
     - icon: fontawesome/brands/github
-      link: https://github.com/your-org/wrk-runner
+      link: https://github.com/droxer/wrk-runner
     - icon: fontawesome/brands/python
       link: https://pypi.org/project/wrk-runner/

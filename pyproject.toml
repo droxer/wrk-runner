@@ -49,11 +49,11 @@ docs = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/your-org/wrk-runner"
+Homepage = "https://github.com/droxer/wrk-runner"
 Documentation = "https://wrk-runner.readthedocs.io"
-Repository = "https://github.com/your-org/wrk-runner"
-Issues = "https://github.com/your-org/wrk-runner/issues"
-Changelog = "https://github.com/your-org/wrk-runner/blob/main/CHANGELOG.md"
+Repository = "https://github.com/droxer/wrk-runner"
+Issues = "https://github.com/droxer/wrk-runner/issues"
+Changelog = "https://github.com/droxer/wrk-runner/blob/main/CHANGELOG.md"
 
 [project.scripts]
 wrk-runner = "wrk_runner.cli.main:cli"
