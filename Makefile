@@ -1,4 +1,4 @@
-.PHONY: help install install-dev build test test-cov lint format type-check clean publish publish-test docs serve-docs all check
+.PHONY: help install install-dev build test test-cov lint format format-check type-check security clean publish publish-test docs serve-docs all check
 
 # Default target
 help:
@@ -10,6 +10,7 @@ help:
 	@echo "  test-cov     - Run tests with coverage"
 	@echo "  lint         - Run linting (ruff)"
 	@echo "  format       - Format code (black + ruff)"
+	@echo "  format-check - Check code formatting (black + ruff --check)"
 	@echo "  type-check   - Run type checking (mypy)"
 	@echo "  clean        - Clean build artifacts"
 	@echo "  publish      - Publish to PyPI"
@@ -48,6 +49,14 @@ format:
 type-check:
 	uv run mypy --ignore-missing-imports src
 
+security:
+	uv run bandit -r src
+	uv run safety check
+
+format-check:
+	uv run black --check src tests
+	uv run ruff check src tests
+
 # Cleanup
 clean:
 	rm -rf build/
@@ -74,6 +83,6 @@ serve-docs:
 	uv run mkdocs serve
 
 # Combined targets
-check: lint type-check test
+check: lint type-check test security
 
 all: install-dev check build

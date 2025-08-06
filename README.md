@@ -2,7 +2,7 @@
 
 Generic performance testing using wrk.
 
-- **Easy CLI**: One-command testing with `wrk-runner quick https://httpbin.org/get`
+- **Easy CLI**: One-command testing with `wrk-runner test https://httpbin.org/get`
 - **JSON/YAML Config**: Structured test definitions with endpoints and parameters
 - **Rich Reports**: Auto-generated markdown reports with metrics and charts
 - **Multiple Formats**: JSON, CSV, HTML reports for CI/CD integration
