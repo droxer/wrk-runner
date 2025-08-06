@@ -1,4 +1,4 @@
-.PHONY: help install install-dev build test test-cov lint format format-check type-check security clean publish publish-test docs serve-docs all check
+.PHONY: help install install-dev build test test-cov lint format format-check type-check security clean publish publish-test docs serve-docs all check pre-commit pre-commit-install
 
 # Default target
 help:
@@ -17,16 +17,19 @@ help:
 	@echo "  publish-test - Publish to TestPyPI"
 	@echo "  docs         - Build documentation"
 	@echo "  serve-docs   - Serve documentation locally"
-	@echo "  check        - Run all checks (lint, type-check, test)"
+	@echo "  check        - Run all checks (lint, type-check, test, security)"
+	@echo "  pre-commit   - Run pre-commit hooks on all files"
+	@echo "  pre-commit-install - Install pre-commit hooks"
 	@echo "  all          - Run full build pipeline"
 
 # Installation
 install:
-	uv pip install -e .
+	PIP_INDEX_URL=https://pypi.org/simple/ uv pip install -e .
 
 install-dev:
 	uv venv
-	uv pip install -e ".[dev,docs]"
+	PIP_INDEX_URL=https://pypi.org/simple/ uv pip install -e ".[dev,docs]"
+	uv run pre-commit install
 
 # Build
 build: clean
@@ -34,29 +37,29 @@ build: clean
 
 # Testing
 test:
-	uv run pytest tests
+	uv run --active pytest tests
 
 test-cov:
-	uv run pytest tests --cov=wrk_runner --cov-report=term-missing
+	uv run --active pytest tests --cov=wrk_runner --cov-report=term-missing
 
 # Code quality
 lint:
-	uv run ruff check src tests
+	uv run --active ruff check src tests
 
 format:
-	uv run black src tests
-	uv run ruff check --fix src tests
+	uv run --active black src tests
+	uv run --active ruff check --fix src tests
 
 type-check:
-	uv run mypy --ignore-missing-imports src
+	uv run --active mypy --ignore-missing-imports src
 
 security:
-	uv run bandit -r src
-	uv run safety check
+	uv run --active bandit -r src
+	uv run --active safety check
 
 format-check:
-	uv run black --check src tests
-	uv run ruff check src tests
+	uv run --active black --check src tests
+	uv run --active ruff check src tests
 
 # Cleanup
 clean:
@@ -71,19 +74,25 @@ clean:
 
 # Publishing
 publish: build
-	uv run twine upload dist/*
+	uv run --active twine upload dist/*
 
 publish-test: build
-	uv run twine upload --repository testpypi dist/*
+	uv run --active twine upload --repository testpypi dist/*
 
 # Documentation
 docs:
-	uv run mkdocs build
+	uv run --active mkdocs build
 
 serve-docs:
-	uv run mkdocs serve
+	uv run --active mkdocs serve
 
 # Combined targets
 check: lint type-check test security
+
+pre-commit:
+	PIP_INDEX_URL=https://pypi.org/simple/ uv run --active pre-commit run --all-files
+
+pre-commit-install:
+	uv run --active pre-commit install
 
 all: install-dev check build

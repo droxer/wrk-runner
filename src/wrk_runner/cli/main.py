@@ -39,7 +39,18 @@ def cli():
 @click.option("-s", "--lua-script", help="Lua script for wrk")
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
 @click.option("--name", help="Test name for quick mode")
-def test(url, config, duration, connections, threads, warmup, output, lua_script, verbose, name):
+def test(
+    url,
+    config,
+    duration,
+    connections,
+    threads,
+    warmup,
+    output,
+    lua_script,
+    verbose,
+    name,
+):
     """Run performance tests from configuration file or quick test with URL."""
     if verbose:
         import logging
@@ -100,7 +111,7 @@ def test(url, config, duration, connections, threads, warmup, output, lua_script
 
         if results:
             report_file = tester.generate_report(results)
-            
+
             if url:
                 # Quick test mode output
                 console.print("\n[green]✓ Quick test complete![/green]")
@@ -140,8 +151,6 @@ def test(url, config, duration, connections, threads, warmup, output, lua_script
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
         sys.exit(1)
-
-
 
 
 @cli.command()

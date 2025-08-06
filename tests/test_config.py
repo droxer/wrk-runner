@@ -1,6 +1,5 @@
 """Tests for configuration handling."""
 
-
 from wrk_runner.core.config import Config, TestConfig
 
 
@@ -9,9 +8,7 @@ class TestTestConfig:
 
     def test_test_config_basic(self):
         """Test basic test configuration."""
-        config = TestConfig(
-            name="test_api", url="http://localhost:8000/api"
-        )
+        config = TestConfig(name="test_api", url="http://localhost:8000/api")
         assert config.name == "test_api"
         assert config.url == "http://localhost:8000/api"
 

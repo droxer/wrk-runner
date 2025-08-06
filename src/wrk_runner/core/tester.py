@@ -3,8 +3,6 @@
 import logging
 import re
 import subprocess
-import sys
-import time
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
@@ -259,5 +257,3 @@ class PerformanceTester:
 
         self.logger.info(f"Report generated: {report_file}")
         return str(report_file)
-
-
