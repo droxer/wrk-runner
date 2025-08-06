@@ -84,7 +84,7 @@ serve-docs:
 	uv run --active mkdocs serve
 
 # Combined targets
-check: lint type-check test security
+check: lint format type-check test security
 
 
 all: install-dev check build
