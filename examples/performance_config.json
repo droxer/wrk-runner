@@ -6,22 +6,12 @@
   "output_dir": "results",
   "tests": [
     {
-      "name": "fasthttp",
-      "url": "http://localhost:8081",
-      "server": {
-        "name": "fasthttp",
-        "command": ["go", "run", "cmd/fasthttp/main.go"],
-        "port": 8081
-      }
+      "name": "local_api",
+      "url": "http://localhost:8080/api"
     },
     {
-      "name": "gin",
-      "url": "http://localhost:8082",
-      "server": {
-        "name": "gin",
-        "command": ["go", "run", "cmd/gin/main.go"],
-        "port": 8082
-      }
+      "name": "external_service",
+      "url": "http://httpbin.org/get"
     }
   ]
 }

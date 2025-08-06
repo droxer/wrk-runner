@@ -24,6 +24,7 @@ def cli():
 
 
 @cli.command()
+@click.argument("url", required=False)
 @click.option(
     "-c",
     "--config",
@@ -37,45 +38,58 @@ def cli():
 @click.option("-o", "--output", help="Output directory")
 @click.option("-s", "--lua-script", help="Lua script for wrk")
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
-def test(config, duration, connections, threads, warmup, output, lua_script, verbose):
-    """Run performance tests from configuration file."""
+@click.option("--name", help="Test name for quick mode")
+def test(url, config, duration, connections, threads, warmup, output, lua_script, verbose, name):
+    """Run performance tests from configuration file or quick test with URL."""
     if verbose:
         import logging
 
         logging.getLogger().setLevel(logging.DEBUG)
 
     try:
-        # Load configuration
-        config_path = Path(config)
-        if not config_path.exists():
-            console.print(f"[red]Configuration file not found: {config}[/red]")
-            sys.exit(1)
-
-        if config_path.suffix.lower() in [".yml", ".yaml"]:
-            import yaml
-
-            with open(config_path) as f:
-                config_data = yaml.safe_load(f)
+        # Quick test mode - use URL argument
+        if url:
+            config_obj = Config(
+                duration=duration or 30,
+                connections=connections or 100,
+                threads=threads or 2,
+                warmup=warmup or 5,
+                output_dir=output or "quick_test",
+                lua_script=lua_script,
+                tests=[TestConfig(name=name or "quick_test", url=url)],
+            )
         else:
-            with open(config_path) as f:
-                config_data = json.load(f)
+            # Configuration file mode
+            config_path = Path(config)
+            if not config_path.exists():
+                console.print(f"[red]Configuration file not found: {config}[/red]")
+                sys.exit(1)
 
-        # Create config object
-        config_obj = Config(**config_data)
+            if config_path.suffix.lower() in [".yml", ".yaml"]:
+                import yaml
 
-        # Override with CLI arguments
-        if duration:
-            config_obj.duration = duration
-        if connections:
-            config_obj.connections = connections
-        if threads:
-            config_obj.threads = threads
-        if warmup is not None:
-            config_obj.warmup = warmup
-        if output:
-            config_obj.output_dir = output
-        if lua_script:
-            config_obj.lua_script = lua_script
+                with open(config_path) as f:
+                    config_data = yaml.safe_load(f)
+            else:
+                with open(config_path) as f:
+                    config_data = json.load(f)
+
+            # Create config object
+            config_obj = Config(**config_data)
+
+            # Override with CLI arguments
+            if duration:
+                config_obj.duration = duration
+            if connections:
+                config_obj.connections = connections
+            if threads:
+                config_obj.threads = threads
+            if warmup is not None:
+                config_obj.warmup = warmup
+            if output:
+                config_obj.output_dir = output
+            if lua_script:
+                config_obj.lua_script = lua_script
 
         # Run tests
         tester = PerformanceTester(config_obj)
@@ -86,25 +100,39 @@ def test(config, duration, connections, threads, warmup, output, lua_script, ver
 
         if results:
             report_file = tester.generate_report(results)
-            console.print("\n[green]✓ Performance testing complete![/green]")
-            console.print(f"[blue]📊 Report: {report_file}[/blue]")
+            
+            if url:
+                # Quick test mode output
+                console.print("\n[green]✓ Quick test complete![/green]")
+                for result in results:
+                    console.print(f"[blue]URL:[/blue] {result.url}")
+                    console.print(
+                        f"[green]Requests/sec:[/green] {result.metrics.requests_per_sec}"
+                    )
+                    console.print(
+                        f"[blue]Transfer/sec:[/blue] {result.metrics.transfer_per_sec}"
+                    )
+            else:
+                # Configuration file mode output
+                console.print("\n[green]✓ Performance testing complete![/green]")
+                console.print(f"[blue]📊 Report: {report_file}[/blue]")
 
-            # Display summary table
-            table = Table(title="Test Results Summary")
-            table.add_column("Server", style="cyan")
-            table.add_column("URL", style="magenta")
-            table.add_column("Requests/sec", style="green")
-            table.add_column("Transfer/sec", style="blue")
+                # Display summary table
+                table = Table(title="Test Results Summary")
+                table.add_column("Server", style="cyan")
+                table.add_column("URL", style="magenta")
+                table.add_column("Requests/sec", style="green")
+                table.add_column("Transfer/sec", style="blue")
 
-            for result in results:
-                table.add_row(
-                    result.server,
-                    result.url,
-                    str(result.metrics.requests_per_sec or "N/A"),
-                    str(result.metrics.transfer_per_sec or "N/A"),
-                )
+                for result in results:
+                    table.add_row(
+                        result.server,
+                        result.url,
+                        str(result.metrics.requests_per_sec or "N/A"),
+                        str(result.metrics.transfer_per_sec or "N/A"),
+                    )
 
-            console.print(table)
+                console.print(table)
         else:
             console.print("[red]✗ No tests completed successfully[/red]")
             sys.exit(1)
@@ -114,47 +142,6 @@ def test(config, duration, connections, threads, warmup, output, lua_script, ver
         sys.exit(1)
 
 
-@cli.command()
-@click.argument("url")
-@click.option("-d", "--duration", default=30, help="Test duration in seconds")
-@click.option("-c", "--connections", default=100, help="Number of connections")
-@click.option("-t", "--threads", default=2, help="Number of threads")
-@click.option("-o", "--output", default="quick_test", help="Output directory")
-@click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
-def quick(url, duration, connections, threads, output, verbose):
-    """Run a quick performance test."""
-    if verbose:
-        import logging
-
-        logging.getLogger().setLevel(logging.DEBUG)
-
-    config = Config(
-        duration=duration,
-        connections=connections,
-        threads=threads,
-        output_dir=output,
-        tests=[TestConfig(name="quick_test", url=url)],
-    )
-
-    tester = PerformanceTester(config)
-    if not tester.check_dependencies():
-        sys.exit(1)
-
-    results = tester.run_all_tests()
-
-    if results:
-        console.print("\n[green]✓ Quick test complete![/green]")
-        for result in results:
-            console.print(f"[blue]URL:[/blue] {result.url}")
-            console.print(
-                f"[green]Requests/sec:[/green] {result.metrics.requests_per_sec}"
-            )
-            console.print(
-                f"[blue]Transfer/sec:[/blue] {result.metrics.transfer_per_sec}"
-            )
-    else:
-        console.print("[red]✗ Test failed[/red]")
-        sys.exit(1)
 
 
 @cli.command()
@@ -176,22 +163,12 @@ def create_config(format, output):
         "output_dir": "results",
         "tests": [
             {
-                "name": "fasthttp",
-                "url": "http://localhost:8081",
-                "server": {
-                    "name": "fasthttp",
-                    "command": ["go", "run", "cmd/fasthttp/main.go"],
-                    "port": 8081,
-                },
+                "name": "example_api",
+                "url": "http://localhost:8080/api",
             },
             {
-                "name": "gin",
-                "url": "http://localhost:8082",
-                "server": {
-                    "name": "gin",
-                    "command": ["go", "run", "cmd/gin/main.go"],
-                    "port": 8082,
-                },
+                "name": "external_service",
+                "url": "http://httpbin.org/get",
             },
         ],
     }
@@ -237,8 +214,7 @@ def validate(config_file):
         console.print(f"[blue]Tests configured: {len(config.tests)}[/blue]")
 
         for test in config.tests:
-            status = "[green]✓[/green]" if test.server else "[yellow]⚡[/yellow]"
-            console.print(f"{status} {test.name} → {test.url}")
+            console.print(f"[green]✓[/green] {test.name} → {test.url}")
 
     except Exception as e:
         console.print(f"[red]Validation failed: {e}[/red]")
@@ -398,13 +374,15 @@ def main(
         # Quick test mode
         ctx = click.get_current_context()
         ctx.invoke(
-            quick,
+            test,
             url=url,
             duration=duration or 30,
             connections=connections or 100,
             threads=threads or 2,
             output=output or "quick_test",
+            lua_script=lua_script,
             verbose=verbose,
+            name="quick_test",
         )
     elif config:
         # Config file mode

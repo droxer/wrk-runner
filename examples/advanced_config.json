@@ -7,39 +7,16 @@
   "lua_script": "scripts/post.lua",
   "tests": [
     {
-      "name": "fasthttp_get",
-      "url": "http://localhost:8081",
-      "server": {
-        "name": "fasthttp",
-        "command": ["go", "run", "cmd/fasthttp/main.go"],
-        "port": 8081,
-        "host": "localhost"
-      }
+      "name": "local_api_get",
+      "url": "http://localhost:8080/api"
     },
     {
-      "name": "fasthttp_post",
-      "url": "http://localhost:8081/api/data",
-      "server": {
-        "name": "fasthttp",
-        "command": ["go", "run", "cmd/fasthttp/main.go"],
-        "port": 8081,
-        "host": "localhost"
-      }
+      "name": "local_api_post",
+      "url": "http://localhost:8080/api/data"
     },
     {
-      "name": "gin_get",
-      "url": "http://localhost:8082",
-      "server": {
-        "name": "gin",
-        "command": ["go", "run", "cmd/gin/main.go"],
-        "port": 8082,
-        "host": "localhost"
-      }
-    },
-    {
-      "name": "external_api",
-      "url": "http://httpbin.org/get",
-      "server": null
+      "name": "external_service",
+      "url": "http://httpbin.org/get"
     }
   ]
 }

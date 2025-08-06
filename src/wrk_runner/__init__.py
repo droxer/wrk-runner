@@ -9,7 +9,7 @@ __version__ = "0.1.0"
 __author__ = "Performance Testing Team"
 __email__ = "team@example.com"
 
-from .core.config import Config, ServerConfig, TestConfig
+from .core.config import Config, TestConfig
 from .core.models import ServerMetrics, TestResult
 from .core.parser import WRKParser
 from .core.tester import PerformanceTester
@@ -19,7 +19,6 @@ __all__ = [
     "PerformanceTester",
     "Config",
     "TestConfig",
-    "ServerConfig",
     "TestResult",
     "ServerMetrics",
     "WRKParser",

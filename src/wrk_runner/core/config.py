@@ -6,28 +6,11 @@ from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field, validator
 
 
-class ServerConfig(BaseModel):
-    """Configuration for a server to test."""
-
-    name: str = Field(..., description="Server identifier")
-    command: Optional[List[str]] = Field(None, description="Command to start server")
-    port: Optional[int] = Field(None, description="Port to wait for")
-    host: str = Field(default="localhost", description="Host to wait for")
-    env: Optional[Dict[str, str]] = Field(None, description="Environment variables")
-
-    @validator("command", pre=True)
-    def parse_command(cls, v):
-        if isinstance(v, str):
-            return v.split()
-        return v
-
-
 class TestConfig(BaseModel):
     """Configuration for a single test."""
 
     name: str = Field(..., description="Test identifier")
     url: str = Field(..., description="URL to test")
-    server: Optional[ServerConfig] = Field(None, description="Server configuration")
 
     # Optional overrides
     duration: Optional[int] = None

@@ -1,13 +1,10 @@
 """Main performance testing functionality."""
 
 import logging
-import os
 import re
-import signal
 import subprocess
 import sys
 import time
-import urllib.request
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
@@ -16,7 +13,7 @@ from rich.console import Console
 from rich.logging import RichHandler
 from rich.progress import Progress, SpinnerColumn, TextColumn
 
-from .config import Config, ServerConfig, TestConfig
+from .config import Config, TestConfig
 from .models import ServerMetrics, TestResult
 
 
@@ -27,13 +24,8 @@ class PerformanceTester:
         self.config = config
         self.console = Console()
         self.logger = self._setup_logging()
-        self.processes: List[subprocess.Popen] = []
         self.output_dir = Path(config.output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-
-        # Setup signal handlers
-        signal.signal(signal.SIGINT, self._signal_handler)
-        signal.signal(signal.SIGTERM, self._signal_handler)
 
     def _setup_logging(self) -> logging.Logger:
         """Setup rich logging."""
@@ -44,12 +36,6 @@ class PerformanceTester:
             handlers=[RichHandler(console=self.console, rich_tracebacks=True)],
         )
         return logging.getLogger(__name__)
-
-    def _signal_handler(self, signum, frame):
-        """Handle interrupt signals gracefully."""
-        self.logger.info("Received interrupt signal, cleaning up...")
-        self.cleanup()
-        sys.exit(0)
 
     def check_dependencies(self) -> bool:
         """Check if required dependencies are available."""
@@ -91,74 +77,6 @@ class PerformanceTester:
             return True
         except subprocess.CalledProcessError:
             return False
-
-    def wait_for_server(self, host: str, port: int, max_attempts: int = 30) -> bool:
-        """Wait for server to be ready."""
-        url = f"http://{host}:{port}"
-        self.logger.info(f"Waiting for server at {url}...")
-
-        for _attempt in range(max_attempts):
-            try:
-                urllib.request.urlopen(url, timeout=1)
-                self.logger.info("Server ready")
-                return True
-            except (urllib.error.URLError, ConnectionError):
-                time.sleep(1)
-
-        self.logger.error("Server failed to start")
-        return False
-
-    def start_server(self, server_config: ServerConfig) -> bool:
-        """Start a server based on configuration."""
-        if not server_config.command:
-            self.logger.error("No command specified for server")
-            return False
-
-        self.logger.info(f"Starting server: {server_config.name}")
-
-        try:
-            env = os.environ.copy()
-            if server_config.env:
-                env.update(server_config.env)
-
-            process = subprocess.Popen(
-                server_config.command,
-                env=env,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-
-            self.processes.append(process)
-
-            # Wait for server to be ready
-            if server_config.port and not self.wait_for_server(
-                server_config.host, server_config.port
-            ):
-                self.cleanup()
-                return False
-
-            # Warmup period
-            warmup = self.config.warmup
-            if warmup > 0:
-                self.logger.info(f"Warming up for {warmup}s...")
-                time.sleep(warmup)
-
-            return True
-
-        except Exception as e:
-            self.logger.error(f"Failed to start server: {e}")
-            return False
-
-    def cleanup(self):
-        """Clean up all running processes."""
-        for process in self.processes:
-            try:
-                process.terminate()
-                process.wait(timeout=5)
-            except subprocess.TimeoutExpired:
-                process.kill()
-                process.wait()
-        self.processes.clear()
 
     def parse_wrk_output(self, output: str) -> ServerMetrics:
         """Parse wrk output to extract metrics."""
@@ -290,21 +208,10 @@ class PerformanceTester:
 
             for test_config in self.config.tests:
                 try:
-                    # Start server if needed
-                    if test_config.server:
-                        if not self.start_server(test_config.server):
-                            progress.update(task, advance=1)
-                            continue
-
                     # Run test
                     result = self.run_test(test_config)
                     if result:
                         results.append(result)
-
-                    # Stop server if started
-                    if test_config.server:
-                        self.cleanup()
-                        time.sleep(2)  # Cooldown
 
                 except Exception as e:
                     self.logger.error(f"Test {test_config.name} failed: {e}")

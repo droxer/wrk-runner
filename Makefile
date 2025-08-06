@@ -32,10 +32,10 @@ build: clean
 
 # Testing
 test:
-	uv run pytest
+	uv run pytest tests
 
 test-cov:
-	uv run pytest --cov=wrk_runner --cov-report=term-missing --cov-report=html --cov-report=xml
+	uv run pytest tests --cov=wrk_runner --cov-report=term-missing
 
 # Code quality
 lint:

@@ -1,36 +1,7 @@
 """Tests for configuration handling."""
 
 
-from wrk_runner.core.config import Config, ServerConfig, TestConfig
-
-
-class TestServerConfig:
-    """Tests for ServerConfig."""
-
-    def test_server_config_basic(self):
-        """Test basic server configuration."""
-        config = ServerConfig(
-            name="test_server", command=["python", "app.py"], port=8000
-        )
-        assert config.name == "test_server"
-        assert config.command == ["python", "app.py"]
-        assert config.port == 8000
-        assert config.host == "localhost"
-
-    def test_server_config_string_command(self):
-        """Test server config with string command."""
-        config = ServerConfig(name="test_server", command="python app.py", port=8000)
-        assert config.command == ["python", "app.py"]
-
-    def test_server_config_with_env(self):
-        """Test server config with environment variables."""
-        config = ServerConfig(
-            name="test_server",
-            command=["python", "app.py"],
-            port=8000,
-            env={"DEBUG": "true", "PORT": "8000"},
-        )
-        assert config.env == {"DEBUG": "true", "PORT": "8000"}
+from wrk_runner.core.config import Config, TestConfig
 
 
 class TestTestConfig:
@@ -39,21 +10,10 @@ class TestTestConfig:
     def test_test_config_basic(self):
         """Test basic test configuration."""
         config = TestConfig(
-            name="test_api", url="http://localhost:8000/api", server=None
+            name="test_api", url="http://localhost:8000/api"
         )
         assert config.name == "test_api"
         assert config.url == "http://localhost:8000/api"
-        assert config.server is None
-
-    def test_test_config_with_server(self):
-        """Test test config with server."""
-        server = ServerConfig(
-            name="test_server", command=["python", "app.py"], port=8000
-        )
-        config = TestConfig(
-            name="test_api", url="http://localhost:8000/api", server=server
-        )
-        assert config.server == server
 
     def test_test_config_with_overrides(self):
         """Test test config with parameter overrides."""
