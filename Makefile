@@ -1,9 +1,8 @@
-.PHONY: help install install-dev build test test-cov lint format type-check clean publish publish-test docs serve-docs all check venv
+.PHONY: help install install-dev build test test-cov lint format type-check clean publish publish-test docs serve-docs all check
 
 # Default target
 help:
 	@echo "Available targets:"
-	@echo "  venv         - Create and activate virtual environment"
 	@echo "  install      - Install package and dependencies"
 	@echo "  install-dev  - Install package with development dependencies"
 	@echo "  build        - Build distribution packages"
@@ -20,17 +19,12 @@ help:
 	@echo "  check        - Run all checks (lint, type-check, test)"
 	@echo "  all          - Run full build pipeline"
 
-# Virtual environment
-venv:
-	python3 -m venv venv
-	@echo "Virtual environment created. Run 'source venv/bin/activate' to activate it."
-
 # Installation
 install:
-	python3 -m pip install -e .
+	uv pip install -e .
 
 install-dev:
-	python3 -m pip install -e ".[dev,docs]"
+	uv pip install -e ".[dev,docs]"
 
 # Build
 build: clean
@@ -38,21 +32,21 @@ build: clean
 
 # Testing
 test:
-	python3 -m pytest
+	uv run pytest
 
 test-cov:
-	python3 -m pytest --cov=wrk_runner --cov-report=term-missing --cov-report=html --cov-report=xml
+	uv run pytest --cov=wrk_runner --cov-report=term-missing --cov-report=html --cov-report=xml
 
 # Code quality
 lint:
-	python3 -m ruff check src tests
+	uv run ruff check src tests
 
 format:
-	python3 -m black src tests
-	python3 -m ruff check --fix src tests
+	uv run black src tests
+	uv run ruff check --fix src tests
 
 type-check:
-	python3 -m mypy --ignore-missing-imports src
+	uv run mypy --ignore-missing-imports src
 
 # Cleanup
 clean:
@@ -67,17 +61,17 @@ clean:
 
 # Publishing
 publish: build
-	python -m twine upload dist/*
+	uv run twine upload dist/*
 
 publish-test: build
-	python -m twine upload --repository testpypi dist/*
+	uv run twine upload --repository testpypi dist/*
 
 # Documentation
 docs:
-	mkdocs build
+	uv run mkdocs build
 
 serve-docs:
-	mkdocs serve
+	uv run mkdocs serve
 
 # Combined targets
 check: lint type-check test
