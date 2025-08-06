@@ -162,6 +162,8 @@ exclude_lines = [
 [dependency-groups]
 dev = [
     "bandit>=1.7.10",
+    "build>=1.2.2.post1",
     "pytest>=8.3.5",
     "safety>=3.6.0",
+    "twine>=6.1.0",
 ]
