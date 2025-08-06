@@ -1,0 +1,83 @@
+site_name: wrk-runner
+site_description: Generic performance testing framework using wrk
+site_url: https://wrk-runner.readthedocs.io
+
+repo_name: your-org/wrk-runner
+repo_url: https://github.com/your-org/wrk-runner
+
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: installation.md
+    - Quick Start: quickstart.md
+  - Usage:
+    - CLI Usage: cli.md
+    - Configuration: configuration.md
+    - Examples: examples.md
+  - API Reference:
+    - Core: api/core.md
+    - CLI: api/cli.md
+    - Utils: api/utils.md
+  - Development:
+    - Contributing: contributing.md
+    - Development Setup: development.md
+  - Changelog: changelog.md
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - content.code.annotate
+    - content.code.copy
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_root_full_path: false
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/your-org/wrk-runner
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/wrk-runner/

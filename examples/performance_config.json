@@ -1,0 +1,27 @@
+{
+  "duration": 30,
+  "connections": 1000,
+  "threads": 8,
+  "warmup": 5,
+  "output_dir": "results",
+  "tests": [
+    {
+      "name": "fasthttp",
+      "url": "http://localhost:8081",
+      "server": {
+        "name": "fasthttp",
+        "command": ["go", "run", "cmd/fasthttp/main.go"],
+        "port": 8081
+      }
+    },
+    {
+      "name": "gin",
+      "url": "http://localhost:8082",
+      "server": {
+        "name": "gin",
+        "command": ["go", "run", "cmd/gin/main.go"],
+        "port": 8082
+      }
+    }
+  ]
+}
