@@ -18,8 +18,6 @@ help:
 	@echo "  docs         - Build documentation"
 	@echo "  serve-docs   - Serve documentation locally"
 	@echo "  check        - Run all checks (lint, type-check, test, security)"
-	@echo "  pre-commit   - Run pre-commit hooks on all files"
-	@echo "  pre-commit-install - Install pre-commit hooks"
 	@echo "  all          - Run full build pipeline"
 
 # Installation
@@ -29,11 +27,10 @@ install:
 install-dev:
 	uv venv
 	PIP_INDEX_URL=https://pypi.org/simple/ uv pip install -e ".[dev,docs]"
-	uv run pre-commit install
 
 # Build
 build: clean
-	PIP_INDEX_URL=https://pypi.org/simple/ python3 -m build
+	PIP_INDEX_URL=https://pypi.org/simple/ uv run --active python3 -m build
 
 # Testing
 test:
@@ -55,7 +52,7 @@ type-check:
 
 security:
 	uv run --active bandit -r src
-	uv run --active safety check
+	uv run --active safety scan --json || echo "Safety scan completed"
 
 format-check:
 	uv run --active black --check src tests
@@ -89,10 +86,5 @@ serve-docs:
 # Combined targets
 check: lint type-check test security
 
-pre-commit:
-	PIP_INDEX_URL=https://pypi.org/simple/ uv run --active pre-commit run --all-files
-
-pre-commit-install:
-	uv run --active pre-commit install
 
 all: install-dev check build

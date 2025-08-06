@@ -11,7 +11,7 @@ Provides various chart types for visualizing performance test results including:
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from rich.console import Console
 from rich.table import Table
@@ -325,7 +325,7 @@ class ChartGenerator:
                 self.console.print(f"{server:20} |{bar} {value:,.0f}")
 
     def scan_and_visualize(
-        self, output_format: str = "html", output_file: str = None
+        self, output_format: str = "html", output_file: Optional[str] = None
     ) -> str:
         """Scan results and generate visualization."""
         results = self.parser.scan_and_parse_all()

@@ -103,7 +103,7 @@ def print_results_summary(console: Console, results: List[TestResult]) -> None:
     # Summary statistics
     successful = [r for r in results if r.metrics.requests_per_sec]
     if successful:
-        avg_rps = sum(r.metrics.requests_per_sec for r in successful) / len(successful)
+        avg_rps = sum(r.metrics.requests_per_sec for r in successful if r.metrics.requests_per_sec is not None) / len(successful) if successful else 0.0
         console.print(f"\n[green]Average requests/sec: {avg_rps:.2f}[/green]")
         console.print(
             f"[blue]Successful tests: {len(successful)}/{len(results)}[/blue]"

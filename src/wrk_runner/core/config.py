@@ -42,7 +42,7 @@ class Config(BaseModel):
     tests: List[TestConfig] = Field(..., description="List of tests to run")
 
     @validator("output_dir")
-    def validate_output_dir(cls, v):
+    def validate_output_dir(cls, v: str) -> str:
         Path(v).mkdir(parents=True, exist_ok=True)
         return v
 

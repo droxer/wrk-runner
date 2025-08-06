@@ -112,7 +112,7 @@ class WRKParser:
 
     def _parse_configuration(self, content: str) -> Dict[str, Any]:
         """Parse test configuration from wrk output."""
-        config = {}
+        config: Dict[str, Any] = {}
 
         # Threads and connections
         threads_conn = re.search(
@@ -138,7 +138,7 @@ class WRKParser:
 
     def _parse_performance_metrics(self, content: str) -> Dict[str, Any]:
         """Parse performance metrics from wrk output."""
-        metrics = {}
+        metrics: Dict[str, Any] = {}
 
         # Latency statistics
         latency_line = re.search(
@@ -180,9 +180,9 @@ class WRKParser:
             content,
         )
         if total_line:
-            metrics["total_requests"] = self._parse_value(total_line.group(1))
+            metrics["total_requests"] = int(self._parse_value(total_line.group(1)))
             metrics["duration_parsed"] = total_line.group(2)
-            metrics["bytes_read"] = self._parse_value(total_line.group(3))
+            metrics["bytes_read"] = int(self._parse_value(total_line.group(3)))
 
         # Requests/sec summary
         summary_req = re.search(r"Requests/sec:\s+(\d+\.?\d*)", content)
@@ -220,7 +220,7 @@ class WRKParser:
 
     def _parse_transfer_metrics(self, content: str) -> Dict[str, Any]:
         """Parse transfer-related metrics."""
-        transfer = {}
+        transfer: Dict[str, Any] = {}
 
         # Transfer/sec
         transfer_match = re.search(r"Transfer/sec:\s+(\d+\.?\d*)\s*([KMGT]?B)", content)
@@ -232,7 +232,7 @@ class WRKParser:
 
     def _parse_socket_stats(self, content: str) -> Dict[str, int]:
         """Parse socket error statistics."""
-        socket_stats = {}
+        socket_stats: Dict[str, int] = {}
 
         # Socket errors
         socket_errors = re.search(

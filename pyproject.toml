@@ -39,7 +39,6 @@ dev = [
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.0.0",
-    "pre-commit>=3.0.0",
     "bandit[toml]>=1.7.0",
     "safety>=2.0.0",
 ]
@@ -162,5 +161,7 @@ exclude_lines = [
 
 [dependency-groups]
 dev = [
+    "bandit>=1.7.10",
     "pytest>=8.3.5",
+    "safety>=3.6.0",
 ]

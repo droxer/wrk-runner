@@ -3,10 +3,16 @@
 import json
 import sys
 from pathlib import Path
+from typing import Optional
 
 import click
 from rich.console import Console
 from rich.table import Table
+
+try:
+    import yaml  # type: ignore[import-untyped]
+except ImportError:
+    yaml = None
 
 from ..core.config import Config, TestConfig
 from ..core.parser import WRKParser
@@ -18,7 +24,7 @@ console = Console()
 
 @click.group()
 @click.version_option()
-def cli():
+def cli() -> None:
     """Generic performance testing framework using wrk."""
     pass
 
@@ -40,17 +46,17 @@ def cli():
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
 @click.option("--name", help="Test name for quick mode")
 def test(
-    url,
-    config,
-    duration,
-    connections,
-    threads,
-    warmup,
-    output,
-    lua_script,
-    verbose,
-    name,
-):
+    url: Optional[str],
+    config: str,
+    duration: Optional[int],
+    connections: Optional[int],
+    threads: Optional[int],
+    warmup: Optional[int],
+    output: Optional[str],
+    lua_script: Optional[str],
+    verbose: bool,
+    name: Optional[str],
+) -> None:
     """Run performance tests from configuration file or quick test with URL."""
     if verbose:
         import logging
@@ -162,7 +168,7 @@ def test(
     help="Config format",
 )
 @click.option("--output", "-o", default="performance_config.json", help="Output file")
-def create_config(format, output):
+def create_config(format: str, output: str) -> None:
     """Create sample configuration file."""
     sample_config = {
         "duration": 30,
@@ -199,7 +205,7 @@ def create_config(format, output):
 
 @cli.command()
 @click.argument("config_file")
-def validate(config_file):
+def validate(config_file: str) -> None:
     """Validate configuration file."""
     try:
         config_path = Path(config_file)
@@ -240,7 +246,7 @@ def validate(config_file):
     help="Output format",
 )
 @click.option("--output", "-o", help="Output file for parsed data")
-def parse(file_path, format, output):
+def parse(file_path: Optional[str], format: str, output: Optional[str]) -> None:
     """Parse wrk output file(s) and display results."""
     parser = WRKParser()
 
@@ -320,7 +326,7 @@ def parse(file_path, format, output):
     "--results-dir", "-r", default="results", help="Results directory to scan"
 )
 @click.option("--open", is_flag=True, help="Open HTML report in browser")
-def visualize(format, output, results_dir, open):
+def visualize(format: str, output: Optional[str], results_dir: str, open: bool) -> None:
     """Generate visualizations from wrk output files."""
     try:
         generator = ChartGenerator(results_dir)
@@ -361,17 +367,17 @@ def visualize(format, output, results_dir, open):
 @click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
 @click.option("--create-sample", is_flag=True, help="Create sample configuration")
 def main(
-    url,
-    config,
-    duration,
-    connections,
-    threads,
-    warmup,
-    output,
-    lua_script,
-    verbose,
-    create_sample,
-):
+    url: Optional[str],
+    config: Optional[str],
+    duration: Optional[int],
+    connections: Optional[int],
+    threads: Optional[int],
+    warmup: Optional[int],
+    output: Optional[str],
+    lua_script: Optional[str],
+    verbose: bool,
+    create_sample: bool,
+) -> None:
     """wrk-reporter: Generic performance testing framework using wrk."""
 
     if create_sample:

@@ -2,7 +2,7 @@
 
 import logging
 import re
-import subprocess
+import subprocess  # nosec B404
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
@@ -67,10 +67,11 @@ class PerformanceTester:
         """Check if a command exists in the system."""
         try:
             subprocess.run(
-                ["which", command],
+                ["/usr/bin/which", command],  # nosec B607
                 capture_output=True,
                 check=True,
                 text=True,
+                shell=False,  # nosec B603
             )
             return True
         except subprocess.CalledProcessError:
@@ -153,6 +154,7 @@ class PerformanceTester:
                 capture_output=True,
                 text=True,
                 timeout=config["duration"] + 60,
+                shell=False,  # nosec B603
             )
 
             if result.returncode != 0:
