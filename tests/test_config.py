@@ -1,5 +1,3 @@
-"""Tests for configuration handling."""
-
 from wrk_runner.core.config import Config, TestConfig
 
 

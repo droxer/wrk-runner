@@ -128,6 +128,11 @@ class WRKParser:
             value, unit = duration.groups()
             config["duration"] = float(value)
             config["duration_unit"] = unit
+        else:
+            # Try alternative format: "X requests in Y.Zs"
+            alt_duration = re.search(r"(\d+\.?\d*)s", content)
+            if alt_duration:
+                config["duration"] = float(alt_duration.group(1))
 
         # URL
         url = re.search(r"test\s+@\s+(.+)", content)
@@ -236,7 +241,7 @@ class WRKParser:
 
         # Socket errors
         socket_errors = re.search(
-            r"Socket errors:\s+(\d+) connect,\s+(\d+) read,\s+(\d+) write,\s+(\d+) timeout",
+            r"Socket errors: connect (\d+), read (\d+), write (\d+), timeout (\d+)",
             content,
         )
         if socket_errors:

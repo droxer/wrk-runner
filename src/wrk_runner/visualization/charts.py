@@ -59,9 +59,9 @@ class ChartGenerator:
             table.add_row(
                 meta.get("server", "Unknown"),
                 perf.get("duration", "N/A"),
-                f"{perf.get('requests_per_sec_summary', 'N/A'):,.2f}",
-                f"{latency.get('p50_ms', 'N/A'):.2f}ms",
-                f"{latency.get('p99_ms', 'N/A'):.2f}ms",
+                f"{float(perf.get('requests_per_sec_summary', 0)):.2f}",
+                f"{float(latency.get('p50_ms', 0)):.2f}ms",
+                f"{float(latency.get('p99_ms', 0)):.2f}ms",
                 f"{perf.get('transfer_per_sec', 'N/A')} {perf.get('transfer_unit', 'B')}",
                 status_summary,
             )
@@ -259,9 +259,9 @@ class ChartGenerator:
                 <td>{perf.get('duration', 'N/A')}</td>
                 <td>{perf.get('threads', 'N/A')}</td>
                 <td>{perf.get('connections', 'N/A')}</td>
-                <td>{perf.get('requests_per_sec_summary', 'N/A'):,.2f}</td>
-                <td>{latency.get('p50_ms', 'N/A'):.2f}ms</td>
-                <td>{latency.get('p99_ms', 'N/A'):.2f}ms</td>
+                <td>{float(perf.get('requests_per_sec_summary', 0)):.2f}</td>
+                <td>{float(latency.get('p50_ms', 0)):.2f}ms</td>
+                <td>{float(latency.get('p99_ms', 0)):.2f}ms</td>
                 <td>{perf.get('transfer_per_sec', 'N/A')} {perf.get('transfer_unit', 'B')}</td>
             </tr>
             """
