@@ -1,5 +1,3 @@
-"""Output utilities for wrk-reporter."""
-
 import json
 from pathlib import Path
 from typing import List
@@ -11,7 +9,6 @@ from ..core.models import TestResult
 
 
 def create_summary_table(results: List[TestResult]) -> Table:
-    """Create a rich table with test results summary."""
     table = Table(title="Performance Test Results")
     table.add_column("Server", style="cyan", no_wrap=True)
     table.add_column("URL", style="magenta")
@@ -19,7 +16,6 @@ def create_summary_table(results: List[TestResult]) -> Table:
     table.add_column("Transfer/sec", style="blue", justify="right")
     table.add_column("Latency 50%", style="yellow", justify="right")
     table.add_column("Latency 99%", style="red", justify="right")
-
     for result in results:
         table.add_row(
             result.server,
@@ -29,12 +25,10 @@ def create_summary_table(results: List[TestResult]) -> Table:
             str(result.metrics.latency_50 or "N/A"),
             str(result.metrics.latency_99 or "N/A"),
         )
-
     return table
 
 
 def export_results_json(results: List[TestResult], output_file: Path) -> None:
-    """Export test results to JSON format."""
     data = {
         "timestamp": results[0].timestamp if results else None,
         "summary": {
@@ -43,18 +37,15 @@ def export_results_json(results: List[TestResult], output_file: Path) -> None:
         },
         "results": [result.model_dump() for result in results],
     }
-
     with open(output_file, "w") as f:
         json.dump(data, f, indent=2)
 
 
 def export_results_csv(results: List[TestResult], output_file: Path) -> None:
-    """Export test results to CSV format."""
     import csv
 
     if not results:
         return
-
     fieldnames = [
         "server",
         "url",
@@ -69,11 +60,9 @@ def export_results_csv(results: List[TestResult], output_file: Path) -> None:
         "latency_90",
         "latency_99",
     ]
-
     with open(output_file, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
-
         for result in results:
             row = {
                 "server": result.server,
@@ -93,14 +82,10 @@ def export_results_csv(results: List[TestResult], output_file: Path) -> None:
 
 
 def print_results_summary(console: Console, results: List[TestResult]) -> None:
-    """Print a summary of test results to console."""
     if not results:
         console.print("[red]No results to display[/red]")
         return
-
     console.print(create_summary_table(results))
-
-    # Summary statistics
     successful = [r for r in results if r.metrics.requests_per_sec]
     if successful:
         avg_rps = (

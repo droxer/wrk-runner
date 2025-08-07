@@ -1,0 +1,17 @@
+[bandit]
+exclude_dirs = tests,venv,.venv
+skips = B404,B603
+targets = src/
+
+[bandit.b404]
+# subprocess import - this is a legitimate use case for running wrk performance testing tool
+# Security measures in place:
+# 1. All subprocess calls use shell=False to prevent shell injection
+# 2. Input validation for all parameters
+# 3. URL validation for HTTP/HTTPS schemes
+# 4. Numeric parameter bounds checking
+
+[bandit.b603]
+# subprocess without shell - this is actually the secure way to use subprocess
+# We explicitly set shell=False to prevent shell injection attacks
+# All commands are constructed with validated parameters only
