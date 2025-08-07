@@ -132,4 +132,5 @@ Thumbs.db
 results/
 test_results/
 *.log
+*.json
 *.tmp

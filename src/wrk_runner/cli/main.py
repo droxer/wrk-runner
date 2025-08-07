@@ -168,7 +168,7 @@ def test(
     help="Config format",
 )
 @click.option("--output", "-o", default="performance_config.json", help="Output file")
-def create_config(format: str, output: str) -> None:
+def init_config(format: str, output: str) -> None:
     """Create sample configuration file."""
     sample_config = {
         "duration": 30,
@@ -352,81 +352,6 @@ def visualize(format: str, output: Optional[str], results_dir: str, open: bool) 
     except Exception as e:
         console.print(f"[red]Error generating visualization: {e}[/red]")
         sys.exit(1)
-
-
-@click.command()
-@click.version_option()
-@click.argument("url", required=False)
-@click.option("-c", "--config", help="Configuration file")
-@click.option("-d", "--duration", type=int, help="Test duration in seconds")
-@click.option("--connections", type=int, help="Number of connections")
-@click.option("--threads", type=int, help="Number of threads")
-@click.option("-w", "--warmup", type=int, help="Warmup time in seconds")
-@click.option("-o", "--output", help="Output directory")
-@click.option("-s", "--lua-script", help="Lua script for wrk")
-@click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
-@click.option("--create-sample", is_flag=True, help="Create sample configuration")
-def main(
-    url: Optional[str],
-    config: Optional[str],
-    duration: Optional[int],
-    connections: Optional[int],
-    threads: Optional[int],
-    warmup: Optional[int],
-    output: Optional[str],
-    lua_script: Optional[str],
-    verbose: bool,
-    create_sample: bool,
-) -> None:
-    """wrk-reporter: Generic performance testing framework using wrk."""
-
-    if create_sample:
-        ctx = click.get_current_context()
-        ctx.invoke(create_config)
-        return
-
-    if url:
-        # Quick test mode
-        ctx = click.get_current_context()
-        ctx.invoke(
-            test,
-            url=url,
-            duration=duration or 30,
-            connections=connections or 100,
-            threads=threads or 2,
-            output=output or "quick_test",
-            lua_script=lua_script,
-            verbose=verbose,
-            name="quick_test",
-        )
-    elif config:
-        # Config file mode
-        ctx = click.get_current_context()
-        ctx.invoke(
-            test,
-            config=config,
-            duration=duration,
-            connections=connections,
-            threads=threads,
-            warmup=warmup,
-            output=output,
-            lua_script=lua_script,
-            verbose=verbose,
-        )
-    else:
-        # Default config mode
-        ctx = click.get_current_context()
-        ctx.invoke(
-            test,
-            config="performance_config.json",
-            duration=duration,
-            connections=connections,
-            threads=threads,
-            warmup=warmup,
-            output=output,
-            lua_script=lua_script,
-            verbose=verbose,
-        )
 
 
 if __name__ == "__main__":

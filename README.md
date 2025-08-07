@@ -22,7 +22,7 @@ wrk-runner [COMMAND] [OPTIONS]
 
 Commands:
   test [URL]       Quick test with URL or config file test
-  create-config    Generate sample configuration
+  init-config      Generate sample configuration
   validate FILE    Validate configuration file
   visualize        Scan and visualize results
 ```
